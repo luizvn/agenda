@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @Entity
@@ -14,6 +15,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
+@RequiredArgsConstructor
 public class ContatoImpl implements Contato{
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
