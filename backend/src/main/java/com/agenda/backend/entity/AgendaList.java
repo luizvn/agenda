@@ -25,9 +25,9 @@ public class AgendaList extends Agenda {
 
     @Override
     public boolean addContato(Contato contato) {
-        if (getContato(contato.getTelefone()) != null) {
-            return false;
-        }
+        int index = localizaContato(contato.getTelefone());
+        
+        if (index != -1) return false;
         return contatos.add(contato);
     }
 
@@ -38,12 +38,19 @@ public class AgendaList extends Agenda {
 
     @Override
     public Contato getContato(String telefone) {
-        for (Contato contato : contatos) {
-            if (contato.getTelefone().equals(telefone)) {
-                return contato;
+        int index = localizaContato(telefone);
+
+        if (index == -1) return null;
+        return contatos.get(index);
+    }
+
+    public int localizaContato(String telefone) {
+        for (int i = 0; i < contatos.size(); i++) {
+            if (contatos.get(i).getTelefone().equals(telefone)) {
+                return i;
             }
         }
-        return null;
+        return -1;
     }
     
 }
