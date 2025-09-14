@@ -7,6 +7,7 @@ import java.util.Map;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.MapKey;
 import jakarta.persistence.OneToMany;
 import lombok.ToString;
 
@@ -16,8 +17,10 @@ import lombok.ToString;
 public class AgendaMap extends Agenda{
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @MapKey(name = "telefone")
     private Map<String, Contato> contatos = new HashMap<>();
 
+    
     @Override
     public Collection<Contato> getContatos() {
         return contatos.values();

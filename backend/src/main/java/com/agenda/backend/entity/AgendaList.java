@@ -18,6 +18,7 @@ public class AgendaList extends Agenda {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Contato> contatos = new ArrayList<>();
 
+    
     @Override
     public Collection<Contato> getContatos() {
         return contatos;
@@ -26,7 +27,7 @@ public class AgendaList extends Agenda {
     @Override
     public boolean addContato(Contato contato) {
         int index = localizaContato(contato.getTelefone());
-        
+
         if (index != -1) return false;
         return contatos.add(contato);
     }

@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "contato")
+@Table(name = "contatos")
 @Getter
 @EqualsAndHashCode
 @ToString
