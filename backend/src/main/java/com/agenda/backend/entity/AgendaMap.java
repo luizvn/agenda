@@ -5,8 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import lombok.ToString;
 
+@DiscriminatorValue("MAP")
+@Entity
+@ToString
 public class AgendaMap extends Agenda{
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
