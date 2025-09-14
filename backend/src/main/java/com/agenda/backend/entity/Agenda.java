@@ -23,9 +23,9 @@ public abstract class Agenda {
     @Id
     private Long id;
 
-    public abstract Collection<ContatoImpl> getListaAgenda();
-    public abstract boolean addContato(ContatoImpl contato);
-    public abstract boolean removeContato(ContatoImpl contato);
+    public abstract Collection<Contato> getContatos();
+    public abstract boolean addContato(Contato contato);
+    public abstract boolean removeContato(Contato contato);
     public abstract Contato getContato(String telefone);
 
 }

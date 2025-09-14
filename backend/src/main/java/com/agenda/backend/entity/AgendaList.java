@@ -16,29 +16,29 @@ import lombok.ToString;
 public class AgendaList extends Agenda {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ContatoImpl> listaContato = new ArrayList<>();
+    private List<Contato> contatos = new ArrayList<>();
 
     @Override
-    public Collection<ContatoImpl> getListaAgenda() {
-        return listaContato;
+    public Collection<Contato> getContatos() {
+        return contatos;
     }
 
     @Override
-    public boolean addContato(ContatoImpl contato) {
+    public boolean addContato(Contato contato) {
         if (getContato(contato.getTelefone()) != null) {
             return false;
         }
-        return listaContato.add(contato);
+        return contatos.add(contato);
     }
 
     @Override
-    public boolean removeContato(ContatoImpl contato) {
-        return listaContato.remove(contato);
+    public boolean removeContato(Contato contato) {
+        return contatos.remove(contato);
     }
 
     @Override
     public Contato getContato(String telefone) {
-        for (Contato contato : listaContato) {
+        for (Contato contato : contatos) {
             if (contato.getTelefone().equals(telefone)) {
                 return contato;
             }
