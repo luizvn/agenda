@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Phone, Search, Trash2 } from "lucide-react";
+import { ArrowLeftRight, Phone, Search, Trash2, UserPlus } from "lucide-react";
 
 export default function Home() {
 
@@ -59,6 +59,19 @@ export default function Home() {
         </Table>
 
       </div>  
+
+      {/* |=======| BOTÕES ABAIXO |=======| */}
+      <div className="flex flex-row justify-between">
+          <Button className="bg-cyan-700 cursor-pointer hover:bg-cyan-500">
+              <ArrowLeftRight />
+              Converter Agenda
+          </Button>
+          <Button className="bg-cyan-700 cursor-pointer hover:bg-cyan-500">
+              <UserPlus />
+              Adicionar contato
+          </Button>
+      </div>
+
     </div>
   );
 }
