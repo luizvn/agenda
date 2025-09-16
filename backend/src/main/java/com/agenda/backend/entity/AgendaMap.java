@@ -20,7 +20,6 @@ public class AgendaMap extends Agenda{
     @MapKey(name = "telefone")
     private Map<String, Contato> contatos = new HashMap<>();
 
-
     @Override
     public Collection<Contato> getContatos() {
         return contatos.values();

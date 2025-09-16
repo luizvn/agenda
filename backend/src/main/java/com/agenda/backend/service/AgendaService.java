@@ -30,6 +30,10 @@ public class AgendaService {
     public AgendaResponse createAgenda(CreateAgendaDTO requestDto) {
         AgendaFactory factory = AgendaFactory.getInstance();
 
+        if(agendaRepository.findByNome(requestDto.nome()).isPresent()) {
+            throw new IllegalArgumentException("Já existe uma agenda com o nome: " + requestDto.nome());
+        }
+
         String tipoAgenda = mapearTipo(requestDto.tipo()); 
         Agenda novaAgenda = factory.createAgenda(tipoAgenda);
 
