@@ -53,9 +53,17 @@ public class AgendaService {
     @Transactional(readOnly = true)
     public AgendaResponse getAgendaById(Long id) {
         Agenda agenda = agendaRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Agenda não encontrada."));
+            .orElseThrow(() -> new RuntimeException("Agenda não encontrada."));
 
         return mapearAgendaResponse(agenda);
+    }
+
+    @Transactional
+    public void deleteAgenda(Long id) {
+        if(!agendaRepository.existsById(id)) {
+            throw new RuntimeException("Agenda não encontrada.");
+        }
+        agendaRepository.deleteById(id);
     }
 
     private AgendaResponse mapearAgendaResponse(Agenda agenda) {
