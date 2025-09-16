@@ -1,5 +1,6 @@
 package com.agenda.backend.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -121,6 +122,16 @@ public class AgendaService {
             .collect(Collectors.toList());
 
         return contatosEncontrados.stream()
+            .map(this::mapearContatoResponseDTO)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<ContatoResponseDTO> getAllContatosFromAgenda(Long agendaId) {
+        Agenda agenda = agendaRepository.findById(agendaId)
+            .orElseThrow(() -> new RuntimeException("Agenda não encontrada."));
+
+        return agenda.getContatos().stream()
             .map(this::mapearContatoResponseDTO)
             .collect(Collectors.toList());
     }

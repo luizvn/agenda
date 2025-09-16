@@ -1,6 +1,7 @@
 package com.agenda.backend.controller;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,13 @@ public class AgendaController {
     @GetMapping("/{agendaId}/contatos")
     public ResponseEntity<List<ContatoResponseDTO>> searchContatoByTelefone(@PathVariable Long agendaId, @RequestParam String telefone) {
         List<ContatoResponseDTO> contatos = agendaService.searchContatoByTelefone(agendaId, telefone);
+
+        return ResponseEntity.ok(contatos);
+    }
+
+    @GetMapping("/{agendaId}/contatos/view")
+    public ResponseEntity<Collection<ContatoResponseDTO>> getAllContatosFromAgenda(@PathVariable Long agendaId) {
+        Collection<ContatoResponseDTO> contatos = agendaService.getAllContatosFromAgenda(agendaId);
 
         return ResponseEntity.ok(contatos);
     }
