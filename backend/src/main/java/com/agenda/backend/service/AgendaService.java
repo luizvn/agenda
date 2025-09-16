@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.agenda.backend.dto.AgendaGetAllResponseDTO;
 import com.agenda.backend.dto.AgendaListResponseDTO;
 import com.agenda.backend.dto.AgendaMapResponseDTO;
 import com.agenda.backend.dto.AgendaResponse;
@@ -45,10 +46,10 @@ public class AgendaService {
     }
 
     @Transactional(readOnly = true)
-    public List<AgendaResponse> getAllAgendas() {
+    public List<AgendaGetAllResponseDTO> getAllAgendas() {
         List<Agenda> agendas = agendaRepository.findAll();
         return agendas.stream()
-                .map(this::mapearAgendaResponse)
+                .map(this::mapearAgendaGetAllResponse)
                 .collect(Collectors.toList());
     }
 
@@ -124,6 +125,10 @@ public class AgendaService {
             .collect(Collectors.toList());
     }
 
+
+    private AgendaGetAllResponseDTO mapearAgendaGetAllResponse(Agenda agenda) {
+        return new AgendaGetAllResponseDTO(agenda.getId(), agenda.getNome());
+    }
 
     private ContatoResponseDTO mapearContatoResponseDTO(Contato contato) {
         return new ContatoResponseDTO(contato.getId(), contato.getNome(), contato.getTelefone());

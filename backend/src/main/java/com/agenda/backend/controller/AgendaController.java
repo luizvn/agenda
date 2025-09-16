@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.agenda.backend.dto.AgendaGetAllResponseDTO;
 import com.agenda.backend.dto.AgendaResponse;
 import com.agenda.backend.dto.ContatoRequestDTO;
 import com.agenda.backend.dto.ContatoResponseDTO;
@@ -44,8 +45,8 @@ public class AgendaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AgendaResponse>> getAllAgendas() {
-        List<AgendaResponse> agendas = agendaService.getAllAgendas();
+    public ResponseEntity<List<AgendaGetAllResponseDTO>> getAllAgendas() {
+        List<AgendaGetAllResponseDTO> agendas = agendaService.getAllAgendas();
 
         return ResponseEntity.ok(agendas);
     }
