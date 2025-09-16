@@ -1,0 +1,15 @@
+meta {
+  name: addContatoToAgenda
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:8080/agendas/1/contatos
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

@@ -16,7 +16,7 @@ import lombok.ToString;
 @ToString
 public class AgendaMap extends Agenda{
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = ContatoImpl.class)
+    @OneToMany(mappedBy = "agenda", cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = ContatoImpl.class)
     @MapKey(name = "telefone")
     private Map<String, Contato> contatos = new HashMap<>();
 
@@ -30,6 +30,7 @@ public class AgendaMap extends Agenda{
         if (contatos.containsKey(contato.getTelefone())) {
             return false;
         }
+        contato.setAgenda(this);
         contatos.put(contato.getTelefone(), contato);
         return true;
     }

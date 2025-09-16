@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.agenda.backend.dto.AgendaListResponseDTO;
 import com.agenda.backend.dto.AgendaMapResponseDTO;
 import com.agenda.backend.dto.AgendaResponse;
+import com.agenda.backend.dto.ContatoRequestDTO;
 import com.agenda.backend.dto.ContatoResponseDTO;
 import com.agenda.backend.dto.CreateAgendaDTO;
 import com.agenda.backend.entity.Agenda;
@@ -18,6 +19,7 @@ import com.agenda.backend.entity.AgendaFactory;
 import com.agenda.backend.entity.AgendaList;
 import com.agenda.backend.entity.AgendaMap;
 import com.agenda.backend.entity.Contato;
+import com.agenda.backend.entity.ContatoImpl;
 import com.agenda.backend.repository.AgendaRepository;
 
 @Service
@@ -66,6 +68,34 @@ public class AgendaService {
         agendaRepository.deleteById(id);
     }
 
+    @Transactional
+    public ContatoResponseDTO addContatoToAgenda(Long agendaId, ContatoRequestDTO contatoRequest) {
+        Agenda agenda = agendaRepository.findById(agendaId)
+            .orElseThrow(() -> new RuntimeException("Agenda não encontrada."));
+
+        boolean telefoneJaExiste = agenda.getContatos().stream()
+            .anyMatch(contato -> contato.getTelefone().equals(contatoRequest.telefone()));
+
+        if (telefoneJaExiste) {
+            throw new IllegalArgumentException("Já existe um contato com este telefone na agenda.");
+        }
+
+        Contato novoContato = new ContatoImpl();
+        novoContato.setNome(contatoRequest.nome());
+        novoContato.setTelefone(contatoRequest.telefone());
+
+        agenda.addContato(novoContato);
+
+        Agenda agendaSalva = agendaRepository.save(agenda);
+
+        Contato contatoSalvo = agendaSalva.getContato(novoContato.getTelefone());
+        return mapearContatoResponseDTO(contatoSalvo);
+    }
+
+    private ContatoResponseDTO mapearContatoResponseDTO(Contato contato) {
+        return new ContatoResponseDTO(contato.getId(), contato.getNome(), contato.getTelefone());
+    }
+        
     private AgendaResponse mapearAgendaResponse(Agenda agenda) {
         if (agenda instanceof AgendaList) {
             return mapearParaAgendaListDTO((AgendaList) agenda);

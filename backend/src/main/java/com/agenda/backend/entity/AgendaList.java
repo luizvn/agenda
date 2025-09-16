@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 public class AgendaList extends Agenda {
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = ContatoImpl.class)
+    @OneToMany(mappedBy = "agenda", cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = ContatoImpl.class)
     private List<Contato> contatos = new ArrayList<>();
 
 
@@ -29,6 +29,8 @@ public class AgendaList extends Agenda {
         int index = localizaContato(contato.getTelefone());
 
         if (index != -1) return false;
+
+        contato.setAgenda(this);
         return contatos.add(contato);
     }
 

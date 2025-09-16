@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.agenda.backend.dto.AgendaResponse;
+import com.agenda.backend.dto.ContatoRequestDTO;
+import com.agenda.backend.dto.ContatoResponseDTO;
 import com.agenda.backend.dto.CreateAgendaDTO;
 import com.agenda.backend.service.AgendaService;
 
@@ -31,7 +33,8 @@ public class AgendaController {
     public ResponseEntity<AgendaResponse> createAgenda(@RequestBody @Valid CreateAgendaDTO requestDto) {
         AgendaResponse savedAgenda = agendaService.createAgenda(requestDto);
 
-         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+        URI location = ServletUriComponentsBuilder
+            .fromCurrentRequest()
             .path("/{id}")
             .buildAndExpand(savedAgenda.id())
             .toUri(); 
@@ -58,6 +61,19 @@ public class AgendaController {
         agendaService.deleteAgenda(id);
         
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{agendaId}/contatos")
+    public ResponseEntity<ContatoResponseDTO> addContatoToAgenda(@PathVariable Long agendaId, @RequestBody @Valid ContatoRequestDTO contatoRequest) {
+        ContatoResponseDTO savedContato = agendaService.addContatoToAgenda(agendaId, contatoRequest);
+
+        URI location = ServletUriComponentsBuilder
+            .fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(savedContato.id())
+            .toUri(); 
+
+        return ResponseEntity.created(location).body(savedContato);
     }
 
 }
