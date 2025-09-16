@@ -50,4 +50,9 @@ public class ContatoImpl implements Contato{
         this.telefone = telefone;
     }
 
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 }
