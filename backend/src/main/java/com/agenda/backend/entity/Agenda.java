@@ -2,6 +2,7 @@ package com.agenda.backend.entity;
 
 import java.util.Collection;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
@@ -26,6 +27,7 @@ public abstract class Agenda {
     @Id
     private Long id;
 
+    @Column(unique=true)
     private String nome;
 
     public abstract Collection<Contato> getContatos();
