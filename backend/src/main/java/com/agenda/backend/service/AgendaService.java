@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.agenda.backend.dto.AgendaGetAllResponseDTO;
 import com.agenda.backend.dto.AgendaListResponseDTO;
 import com.agenda.backend.dto.AgendaMapResponseDTO;
-import com.agenda.backend.dto.AgendaResponse;
+import com.agenda.backend.dto.AgendaResponseDTO;
+import com.agenda.backend.dto.AgendaTypedResponse;
 import com.agenda.backend.dto.ContatoRequestDTO;
 import com.agenda.backend.dto.ContatoResponseDTO;
 import com.agenda.backend.dto.CreateAgendaDTO;
@@ -31,7 +31,7 @@ public class AgendaService {
     private AgendaRepository agendaRepository;
 
     @Transactional
-    public AgendaResponse createAgenda(CreateAgendaDTO requestDto) {
+    public AgendaTypedResponse createAgenda(CreateAgendaDTO requestDto) {
         if(agendaRepository.findByNome(requestDto.nome()).isPresent()) {
             throw new IllegalArgumentException("Já existe uma agenda com o nome: " + requestDto.nome());
         }
@@ -47,19 +47,19 @@ public class AgendaService {
     }
 
     @Transactional(readOnly = true)
-    public List<AgendaGetAllResponseDTO> getAllAgendas() {
-        List<Agenda> agendas = agendaRepository.findAll();
+    public Collection<AgendaResponseDTO> getAllAgendas() {
+        Collection<Agenda> agendas = agendaRepository.findAll();
         return agendas.stream()
-                .map(this::mapearAgendaGetAllResponse)
+                .map(this::mapearAgendaResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public AgendaResponse getAgendaById(Long id) {
+    public AgendaResponseDTO getAgendaById(Long id) {
         Agenda agenda = agendaRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Agenda não encontrada."));
 
-        return mapearAgendaResponse(agenda);
+        return mapearAgendaResponseDTO(agenda);
     }
 
     @Transactional
@@ -113,11 +113,11 @@ public class AgendaService {
     }
 
     @Transactional(readOnly = true)
-    public List<ContatoResponseDTO> searchContatoByTelefone(Long agendaId, String telefone) {
+    public Collection<ContatoResponseDTO> searchContatoByTelefone(Long agendaId, String telefone) {
         Agenda agenda = agendaRepository.findById(agendaId)
             .orElseThrow(() -> new RuntimeException("Agenda não encontrada."));
 
-        List<Contato> contatosEncontrados = agenda.getContatos().stream()
+        Collection<Contato> contatosEncontrados = agenda.getContatos().stream()
             .filter(contato -> contato.getTelefone().contains(telefone))
             .collect(Collectors.toList());
 
@@ -137,15 +137,15 @@ public class AgendaService {
     }
 
 
-    private AgendaGetAllResponseDTO mapearAgendaGetAllResponse(Agenda agenda) {
-        return new AgendaGetAllResponseDTO(agenda.getId(), agenda.getNome());
+    private AgendaResponseDTO mapearAgendaResponseDTO(Agenda agenda) {
+        return new AgendaResponseDTO(agenda.getId(), agenda.getNome());
     }
 
     private ContatoResponseDTO mapearContatoResponseDTO(Contato contato) {
         return new ContatoResponseDTO(contato.getId(), contato.getNome(), contato.getTelefone());
     }
         
-    private AgendaResponse mapearAgendaResponse(Agenda agenda) {
+    private AgendaTypedResponse mapearAgendaResponse(Agenda agenda) {
         if (agenda instanceof AgendaList) {
             return mapearParaAgendaListDTO((AgendaList) agenda);
         } else if (agenda instanceof AgendaMap) {

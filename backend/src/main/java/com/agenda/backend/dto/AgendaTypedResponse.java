@@ -1,6 +1,6 @@
 package com.agenda.backend.dto;
 
-public interface AgendaResponse {
+public interface AgendaTypedResponse {
     Long id();
     String nome();
     Object contatos();

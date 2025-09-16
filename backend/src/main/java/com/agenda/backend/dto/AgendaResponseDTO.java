@@ -1,6 +1,6 @@
 package com.agenda.backend.dto;
 
-public record AgendaGetAllResponseDTO(
+public record AgendaResponseDTO(
     Long id,
     String nome
 ) {}

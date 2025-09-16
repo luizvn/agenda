@@ -1,8 +1,8 @@
 package com.agenda.backend.service;
 
 import com.agenda.backend.dto.AgendaListResponseDTO; 
-import com.agenda.backend.dto.AgendaMapResponseDTO; 
-import com.agenda.backend.dto.AgendaResponse; 
+import com.agenda.backend.dto.AgendaMapResponseDTO;
+import com.agenda.backend.dto.AgendaTypedResponse;
 import com.agenda.backend.dto.ContatoResponseDTO; 
 import com.agenda.backend.dto.CreateAgendaDTO; 
 import com.agenda.backend.entity.Agenda; 
@@ -62,7 +62,7 @@ public class AgendaServiceTest {
             doReturn(agendaList).when(spyFactory).createAgenda(AgendaFactory.AGENDALIST); 
             when(agendaRepository.save(any(Agenda.class))).thenReturn(agendaList); 
 
-            AgendaResponse response = agendaService.createAgenda(dto); 
+            AgendaTypedResponse response = agendaService.createAgenda(dto); 
 
             assertTrue(response instanceof AgendaListResponseDTO); 
 
@@ -93,7 +93,7 @@ public class AgendaServiceTest {
             doReturn(agendaMap).when(spyFactory).createAgenda(AgendaFactory.AGENDAMAP); 
             when(agendaRepository.save(any(Agenda.class))).thenReturn(agendaMap); 
 
-            AgendaResponse response = agendaService.createAgenda(dto); 
+            AgendaTypedResponse response = agendaService.createAgenda(dto); 
 
             assertTrue(response instanceof AgendaMapResponseDTO); 
 
