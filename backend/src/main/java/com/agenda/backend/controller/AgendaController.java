@@ -1,9 +1,11 @@
 package com.agenda.backend.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +33,14 @@ public class AgendaController {
             .path("/{id}")
             .buildAndExpand(savedAgenda.id())
             .toUri(); 
-            
+
         return ResponseEntity.created(location).body(savedAgenda);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AgendaResponse>> getAllAgendas() {
+        List<AgendaResponse> agendas = agendaService.getAllAgendas();
+
+        return ResponseEntity.ok(agendas);
     }
 }

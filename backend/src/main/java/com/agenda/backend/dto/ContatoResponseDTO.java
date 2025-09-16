@@ -4,4 +4,4 @@ public record ContatoResponseDTO(
     Long id,
     String nome,
     String telefone
-){}
+) {}

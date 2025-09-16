@@ -28,18 +28,26 @@ public class AgendaService {
 
     @Transactional
     public AgendaResponse createAgenda(CreateAgendaDTO requestDto) {
-        AgendaFactory factory = AgendaFactory.getInstance();
-
         if(agendaRepository.findByNome(requestDto.nome()).isPresent()) {
             throw new IllegalArgumentException("Já existe uma agenda com o nome: " + requestDto.nome());
         }
 
+        AgendaFactory factory = AgendaFactory.getInstance();
+
         String tipoAgenda = mapearTipo(requestDto.tipo()); 
         Agenda novaAgenda = factory.createAgenda(tipoAgenda);
-
         novaAgenda.setNome(requestDto.nome());
+
         Agenda agendaSalva = agendaRepository.save(novaAgenda);
         return mapearResponse(agendaSalva);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AgendaResponse> getAllAgendas() {
+        List<Agenda> agendas = agendaRepository.findAll();
+        return agendas.stream()
+                .map(this::mapearResponse)
+                .collect(Collectors.toList());
     }
 
     private AgendaResponse mapearResponse(Agenda agenda) {
