@@ -76,4 +76,11 @@ public class AgendaController {
         return ResponseEntity.created(location).body(savedContato);
     }
 
+    @DeleteMapping("/{agendaId}/contatos/{contatoId}")
+    public ResponseEntity<Void> removeContatoFromAgenda(@PathVariable Long agendaId, @PathVariable Long contatoId) {
+        agendaService.removeContatoFromAgenda(agendaId, contatoId);
+        
+        return ResponseEntity.noContent().build();
+    }
+
 }

@@ -92,6 +92,24 @@ public class AgendaService {
         return mapearContatoResponseDTO(contatoSalvo);
     }
 
+    @Transactional
+    public void removeContatoFromAgenda(Long agendaId, Long contatoId) {
+        Agenda agenda = agendaRepository.findById(agendaId)
+            .orElseThrow(() -> new RuntimeException("Agenda não encontrada."));
+
+        Contato contato = agenda.getContatos().stream()
+            .filter(c -> c.getId().equals(contatoId))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Contato não encontrado na agenda."));
+
+        boolean contatoFoiRemovido = agenda.removeContato(contato);
+        if(!contatoFoiRemovido) {
+            throw new IllegalStateException("Falha ao remover o contato da agenda.");
+        }
+
+        agendaRepository.save(agenda);
+    }
+
     private ContatoResponseDTO mapearContatoResponseDTO(Contato contato) {
         return new ContatoResponseDTO(contato.getId(), contato.getNome(), contato.getTelefone());
     }
