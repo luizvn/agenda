@@ -24,11 +24,16 @@ import com.agenda.backend.entity.Contato;
 import com.agenda.backend.entity.ContatoImpl;
 import com.agenda.backend.repository.AgendaRepository;
 
+import jakarta.persistence.EntityManager;
+
 @Service
 public class AgendaService {
 
     @Autowired
     private AgendaRepository agendaRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Transactional
     public AgendaTypedResponse createAgenda(CreateAgendaDTO requestDto) {
@@ -131,6 +136,23 @@ public class AgendaService {
             .map(this::mapearContatoResponseDTO)
             .collect(Collectors.toList());
     }
+
+    @Transactional
+    public AgendaTypedResponse convertAgendaType(Long id) {
+        Agenda agendaOriginal = agendaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Agenda não encontrada."));
+
+        String novoTipo = (agendaOriginal instanceof AgendaList) ? "MAP" : "LIST";
+
+        agendaRepository.updateAgendaType(id, novoTipo);
+        entityManager.clear();
+
+        Agenda agendaConvertida = agendaRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Falha ao buscar agenda após conversão."));
+
+        return mapearAgendaResponse(agendaConvertida);
+    }
+
 
     private AgendaResponseDTO mapearAgendaResponseDTO(Agenda agenda) {
         return new AgendaResponseDTO(agenda.getId(), agenda.getNome());

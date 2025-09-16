@@ -92,4 +92,11 @@ public class AgendaController {
         return ResponseEntity.ok(contatos);
     }
 
+    @PostMapping("/{id}/convert")
+    public ResponseEntity<AgendaTypedResponse> convertAgendaType(@PathVariable Long id) {
+        AgendaTypedResponse agendaConvertida = agendaService.convertAgendaType(id);
+
+        return ResponseEntity.ok(agendaConvertida);
+    }
+
 }

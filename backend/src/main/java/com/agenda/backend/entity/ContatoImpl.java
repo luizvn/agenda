@@ -32,7 +32,8 @@ public class ContatoImpl implements Contato{
     private String telefone;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "agenda_id") 
+    @JoinColumn(name = "agenda_id")
+    @ToString.Exclude
     private Agenda agenda;
 
     public void setAgenda(Agenda agenda) {

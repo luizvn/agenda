@@ -30,8 +30,9 @@ public class AgendaList extends Agenda {
 
         if (index != -1) return false;
 
+        contatos.add(contato);
         contato.setAgenda(this);
-        return contatos.add(contato);
+        return true;
     }
 
     @Override
