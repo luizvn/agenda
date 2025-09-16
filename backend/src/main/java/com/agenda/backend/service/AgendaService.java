@@ -48,7 +48,6 @@ public class AgendaService {
     }
 
     private AgendaListResponseDTO mapearParaAgendaListDTO(AgendaList agendaList) {
-        // Mapeia a lista de entidades Contato para uma lista de ContatoResponseDTO
         List<ContatoResponseDTO> contatosDTO = agendaList.getContatos().stream()
                 .map(contato -> new ContatoResponseDTO(contato.getId(), contato.getNome(), contato.getTelefone()))
                 .collect(Collectors.toList());
@@ -57,7 +56,6 @@ public class AgendaService {
     }
 
     private AgendaMapResponseDTO mapearParaAgendaMapDTO(AgendaMap agendaMap) {
-        // Mapeia o mapa de Contatos para um mapa de ContatoResponseDTO
         Map<String, ContatoResponseDTO> contatosDTO = agendaMap.getContatos().stream()
                 .collect(Collectors.toMap(
                     Contato::getTelefone,
@@ -66,7 +64,6 @@ public class AgendaService {
 
         return new AgendaMapResponseDTO(agendaMap.getId(), agendaMap.getNome(), contatosDTO);
     }
-    
 
     private String mapearTipo(String tipo) {
         return switch (tipo.toUpperCase()) {

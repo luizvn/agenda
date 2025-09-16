@@ -31,6 +31,7 @@ public class AgendaController {
             .path("/{id}")
             .buildAndExpand(savedAgenda.id())
             .toUri(); 
+            
         return ResponseEntity.created(location).body(savedAgenda);
     }
 }

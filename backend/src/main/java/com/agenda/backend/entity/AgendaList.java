@@ -15,10 +15,10 @@ import lombok.ToString;
 @ToString
 public class AgendaList extends Agenda {
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = ContatoImpl.class)
     private List<Contato> contatos = new ArrayList<>();
 
-    
+
     @Override
     public Collection<Contato> getContatos() {
         return contatos;

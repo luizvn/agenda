@@ -1,0 +1,22 @@
+meta {
+  name: createAgenda
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/agendas
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nome":"agenda de luiza",
+    "tipo":"MAP"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

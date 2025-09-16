@@ -16,11 +16,11 @@ import lombok.ToString;
 @ToString
 public class AgendaMap extends Agenda{
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = ContatoImpl.class)
     @MapKey(name = "telefone")
     private Map<String, Contato> contatos = new HashMap<>();
 
-    
+
     @Override
     public Collection<Contato> getContatos() {
         return contatos.values();
