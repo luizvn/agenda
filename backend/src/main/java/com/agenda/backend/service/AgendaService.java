@@ -39,18 +39,26 @@ public class AgendaService {
         novaAgenda.setNome(requestDto.nome());
 
         Agenda agendaSalva = agendaRepository.save(novaAgenda);
-        return mapearResponse(agendaSalva);
+        return mapearAgendaResponse(agendaSalva);
     }
 
     @Transactional(readOnly = true)
     public List<AgendaResponse> getAllAgendas() {
         List<Agenda> agendas = agendaRepository.findAll();
         return agendas.stream()
-                .map(this::mapearResponse)
+                .map(this::mapearAgendaResponse)
                 .collect(Collectors.toList());
     }
 
-    private AgendaResponse mapearResponse(Agenda agenda) {
+    @Transactional(readOnly = true)
+    public AgendaResponse getAgendaById(Long id) {
+        Agenda agenda = agendaRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Agenda não encontrada."));
+
+        return mapearAgendaResponse(agenda);
+    }
+
+    private AgendaResponse mapearAgendaResponse(Agenda agenda) {
         if (agenda instanceof AgendaList) {
             return mapearParaAgendaListDTO((AgendaList) agenda);
         } else if (agenda instanceof AgendaMap) {

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,5 +43,12 @@ public class AgendaController {
         List<AgendaResponse> agendas = agendaService.getAllAgendas();
 
         return ResponseEntity.ok(agendas);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AgendaResponse> getAgendaById(@PathVariable @Valid Long id) {
+        AgendaResponse agenda = agendaService.getAgendaById(id);
+
+        return ResponseEntity.ok(agenda);
     }
 }
