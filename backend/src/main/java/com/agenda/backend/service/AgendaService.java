@@ -113,29 +113,24 @@ public class AgendaService {
     }
 
     @Transactional(readOnly = true)
-    public Collection<ContatoResponseDTO> searchContatoByTelefone(Long agendaId, String telefone) {
+    public Collection<ContatoResponseDTO> getContatos(Long agendaId, String telefone) {
         Agenda agenda = agendaRepository.findById(agendaId)
             .orElseThrow(() -> new RuntimeException("Agenda não encontrada."));
 
-        Collection<Contato> contatosEncontrados = agenda.getContatos().stream()
-            .filter(contato -> contato.getTelefone().contains(telefone))
-            .collect(Collectors.toList());
+        Collection<Contato> contatosEncontrados;
+
+        if(telefone != null && !telefone.isBlank()){
+            contatosEncontrados = agenda.getContatos().stream()
+                .filter(contato -> contato.getTelefone().contains(telefone))
+                .collect(Collectors.toList());
+        }else{
+            contatosEncontrados = agenda.getContatos();
+        }
 
         return contatosEncontrados.stream()
             .map(this::mapearContatoResponseDTO)
             .collect(Collectors.toList());
     }
-
-    @Transactional(readOnly = true)
-    public Collection<ContatoResponseDTO> getAllContatosFromAgenda(Long agendaId) {
-        Agenda agenda = agendaRepository.findById(agendaId)
-            .orElseThrow(() -> new RuntimeException("Agenda não encontrada."));
-
-        return agenda.getContatos().stream()
-            .map(this::mapearContatoResponseDTO)
-            .collect(Collectors.toList());
-    }
-
 
     private AgendaResponseDTO mapearAgendaResponseDTO(Agenda agenda) {
         return new AgendaResponseDTO(agenda.getId(), agenda.getNome());

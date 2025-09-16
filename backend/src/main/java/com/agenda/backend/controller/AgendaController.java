@@ -86,15 +86,8 @@ public class AgendaController {
     }
 
     @GetMapping("/{agendaId}/contatos")
-    public ResponseEntity<Collection<ContatoResponseDTO>> searchContatoByTelefone(@PathVariable Long agendaId, @RequestParam String telefone) {
-        Collection<ContatoResponseDTO> contatos = agendaService.searchContatoByTelefone(agendaId, telefone);
-
-        return ResponseEntity.ok(contatos);
-    }
-
-    @GetMapping("/{agendaId}/contatos/view")
-    public ResponseEntity<Collection<ContatoResponseDTO>> getAllContatosFromAgenda(@PathVariable Long agendaId) {
-        Collection<ContatoResponseDTO> contatos = agendaService.getAllContatosFromAgenda(agendaId);
+    public ResponseEntity<Collection<ContatoResponseDTO>> getContatos(@PathVariable Long agendaId, @RequestParam(required = false) String telefone) {
+        Collection<ContatoResponseDTO> contatos = agendaService.getContatos(agendaId, telefone);
 
         return ResponseEntity.ok(contatos);
     }
