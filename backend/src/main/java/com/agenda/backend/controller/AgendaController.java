@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -81,6 +82,13 @@ public class AgendaController {
         agendaService.removeContatoFromAgenda(agendaId, contatoId);
         
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{agendaId}/contatos")
+    public ResponseEntity<List<ContatoResponseDTO>> searchContatoByTelefone(@PathVariable Long agendaId, @RequestParam String telefone) {
+        List<ContatoResponseDTO> contatos = agendaService.searchContatoByTelefone(agendaId, telefone);
+
+        return ResponseEntity.ok(contatos);
     }
 
 }
