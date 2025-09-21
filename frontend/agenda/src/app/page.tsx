@@ -6,11 +6,11 @@ import { ArrowLeftRight, Phone, Search, Trash2, UserPlus } from "lucide-react";
 export default function Home() {
 
   const contatos = [
-    {nome: "Luiza de Sá Florentino", telefone: "(71) 9 1234-4321"},
-    {nome: "Iuri Brandão", telefone: "(71) 9 1234-4321"},
-    {nome: "Caio Melo Seixas", telefone: "(71) 9 1234-4321"},
-    {nome: "Luiz Vinícius", telefone: "(71) 9 1234-4321"},
-    {nome: "Eduardo Américo", telefone: "(71) 9 1234-4321"},
+    {id: "1", nome: "Luiza de Sá Florentino", telefone: "(71) 9 1234-4321"},
+    {id: "2", nome: "Iuri Brandão", telefone: "(71) 9 1234-4321"},
+    {id: "3", nome: "Caio Melo Seixas", telefone: "(71) 9 1234-4321"},
+    {id: "4", nome: "Luiz Vinícius", telefone: "(71) 9 1234-4321"},
+    {id: "5", nome: "Eduardo Américo", telefone: "(71) 9 1234-4321"},
   ]
 
 
@@ -45,7 +45,7 @@ export default function Home() {
           
           <TableBody>
             {contatos.map((contato) => (
-              <TableRow>
+              <TableRow key={contato.id}>
                 <TableCell>{contato.nome}</TableCell>
                 <TableCell>{contato.telefone}</TableCell>
                 <TableCell>
