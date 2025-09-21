@@ -1,9 +1,16 @@
+"use client"
+
+import AdicionarContato from "@/components/AdicionarContato";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeftRight, Phone, Search, Trash2, UserPlus } from "lucide-react";
+import { useState } from "react";
 
 export default function Home() {
+
+  const [isDialogAdicionarContatoOpen, setIsDialogAdicionarContatoOpen] = useState(false);
+
 
   const contatos = [
     {id: "1", nome: "Luiza de Sá Florentino", telefone: "(71) 9 1234-4321"},
@@ -66,12 +73,17 @@ export default function Home() {
               <ArrowLeftRight />
               Converter Agenda
           </Button>
-          <Button className="bg-cyan-700 cursor-pointer hover:bg-cyan-500">
+          <Button className="bg-cyan-700 cursor-pointer hover:bg-cyan-500"
+              onClick={(e) => {
+                  e.preventDefault();
+                  setIsDialogAdicionarContatoOpen(true);
+              }}>
               <UserPlus />
               Adicionar contato
           </Button>
       </div>
-
+      
+      <AdicionarContato isOpen={isDialogAdicionarContatoOpen} onOpenChange={setIsDialogAdicionarContatoOpen} />
     </div>
   );
 }
