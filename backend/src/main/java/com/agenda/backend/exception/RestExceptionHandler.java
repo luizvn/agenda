@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class RestExceptionHandler {
     
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
+    public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO(
             ex.getMessage(),
             HttpStatus.BAD_REQUEST.value(),
             LocalDateTime.now()
@@ -21,9 +21,9 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(RuntimeException ex) {
+    public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundException(RuntimeException ex) {
         
-        ErrorResponse errorResponse = new ErrorResponse(
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO(
             ex.getMessage(),
             HttpStatus.NOT_FOUND.value(),
             LocalDateTime.now()
@@ -33,8 +33,8 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
+    public ResponseEntity<ErrorResponseDTO> handleIllegalStateException(IllegalStateException ex) {
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO(
             ex.getMessage(),
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
             LocalDateTime.now()
