@@ -1,6 +1,7 @@
 "use client"
 
 import AdicionarContato from "@/components/AdicionarContato";
+import ApagarContato from "@/components/ApagarContato";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -10,6 +11,7 @@ import { useState } from "react";
 export default function Home() {
 
   const [isDialogAdicionarContatoOpen, setIsDialogAdicionarContatoOpen] = useState(false);
+  const [isDialogApagarContatoOpen, setIsDialogApagarContatoOpen] = useState(false);
 
 
   const contatos = [
@@ -56,7 +58,11 @@ export default function Home() {
                 <TableCell>{contato.nome}</TableCell>
                 <TableCell>{contato.telefone}</TableCell>
                 <TableCell>
-                  <Button size={"icon"} variant={"ghost"}>
+                  <Button size={"icon"} variant={"ghost"}
+                      onClick={(e) => {
+                          e.preventDefault();
+                          setIsDialogApagarContatoOpen(true);
+                      }}>
                     <Trash2 className="text-red-500"/>
                   </Button>
                 </TableCell>
@@ -84,6 +90,7 @@ export default function Home() {
       </div>
       
       <AdicionarContato isOpen={isDialogAdicionarContatoOpen} onOpenChange={setIsDialogAdicionarContatoOpen} />
+      <ApagarContato isOpen={isDialogApagarContatoOpen} onOpenChange={setIsDialogApagarContatoOpen}/>
     </div>
   );
 }
