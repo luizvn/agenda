@@ -3,6 +3,8 @@ import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle } 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Agenda } from "@/core/agenda";
+import { useState } from "react";
+import ApagarContato from "./ApagarContato";
 
 interface AdicionarContatoProps {
     isOpen: boolean;
@@ -11,6 +13,9 @@ interface AdicionarContatoProps {
 }
 
 export default function SelecionarAgenda ({ isOpen, onOpenChange, agendas }:AdicionarContatoProps) {
+
+    const [isDialogApagarContatoOpen, setIsDialogApagarContatoOpen] = useState(false);
+    
     return(
         <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
             <AlertDialogContent>
@@ -38,7 +43,11 @@ export default function SelecionarAgenda ({ isOpen, onOpenChange, agendas }:Adic
                                 <div className="flex flex-row justify-between items-center mb-1">
                                     <p>{agenda.nome}</p>
                                     <Button className="bg-cyan-700 hover:bg-cyan-500">Abrir</Button>
-                                    <Button size={"icon"} variant={"ghost"}>
+                                    <Button size={"icon"} variant={"ghost"} 
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setIsDialogApagarContatoOpen(true);
+                                    }}>
                                         <Trash2 className="text-red-500"/>
                                     </Button>
                                 </div>
@@ -46,7 +55,7 @@ export default function SelecionarAgenda ({ isOpen, onOpenChange, agendas }:Adic
                             </div>
                         ))}
                     </div>
-
+                    <ApagarContato isOpen={isDialogApagarContatoOpen} onOpenChange={setIsDialogApagarContatoOpen} />
                 </div>
             </AlertDialogContent>
         </AlertDialog>
