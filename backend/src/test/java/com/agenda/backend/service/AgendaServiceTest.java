@@ -132,7 +132,7 @@ public class AgendaServiceTest {
     } 
 
     @Test 
-    void converterAgendaParaList() throws Exception { 
+    void converterAgendaParaListDTO() throws Exception { 
         Contato contato = new ContatoImpl(); 
         contato.setId(10L); 
         contato.setNome("Luiza"); 
@@ -160,7 +160,7 @@ public class AgendaServiceTest {
     } 
     
     @Test 
-    void converterAgendaParaMap() throws Exception { 
+    void converterAgendaParaMapDTO() throws Exception { 
         Contato contato = new ContatoImpl(); 
         contato.setId(20L); 
         contato.setNome("Luiz"); 
@@ -189,7 +189,7 @@ public class AgendaServiceTest {
     }
 
     @Test
-    void converterAgendaSemContatosParaList() throws Exception {
+    void converterAgendaSemContatosParaListDTO() throws Exception {
         AgendaList agendaList = new AgendaList();
         agendaList.setId(99L);
         agendaList.setNome("Agenda Vazia");
@@ -205,7 +205,7 @@ public class AgendaServiceTest {
     }
 
     @Test
-    void converterAgendaSemContatosParaMap() throws Exception {
+    void converterAgendaSemContatosParaMapDTO() throws Exception {
         AgendaMap agendaMap = new AgendaMap();
         agendaMap.setId(100L);
         agendaMap.setNome("Agenda Map Vazia");
