@@ -3,22 +3,32 @@
 import { BookPlus, Contact } from "lucide-react";
 import { Button } from "./ui/button";
 import { Agenda } from "@/core/agenda";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SelecionarAgenda from "./SelecionarAgenda";
 import AdicionarAgenda from "./AdicionarAgenda";
+import { getListaAgendas } from "@/service/agendaService";
 
 export default function Header () {
 
     const [isDialogSelecionarAgendaOpen, setIsDialogSelecionarAgendaOpen] = useState(false);
     const [isDialogAdicionarAgendaOpen, setIsDialogAdicionarAgendaOpen] = useState(false);
+    const [agendas, setAgendas] = useState<Agenda[]>([])
 
-    const agendas: Agenda[] = [
-        {id: 1, nome: "Agenda 01"},
-        {id: 2, nome: "Agenda 02"},
-        {id: 3, nome: "Agenda 03"},
-        {id: 4, nome: "Agenda 04"},
-        {id: 5, nome: "Agenda 05"},
-    ]
+
+    useEffect(() => {
+        const handleCarregarAgendas = async () => {
+            try{
+                const response = await getListaAgendas();
+                setAgendas(response.data);
+            } catch(e:any){
+                console.error(e)
+            }
+        }
+
+        handleCarregarAgendas();
+
+    }, []);
+
 
     return(
         <>
