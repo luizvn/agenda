@@ -5,10 +5,12 @@ import { Button } from "./ui/button";
 import { Agenda } from "@/core/agenda";
 import { useState } from "react";
 import SelecionarAgenda from "./SelecionarAgenda";
+import AdicionarAgenda from "./AdicionarAgenda";
 
 export default function Header () {
 
     const [isDialogSelecionarAgendaOpen, setIsDialogSelecionarAgendaOpen] = useState(false);
+    const [isDialogAdicionarAgendaOpen, setIsDialogAdicionarAgendaOpen] = useState(false);
 
     const agendas: Agenda[] = [
         {id: 1, nome: "Agenda 01"},
@@ -33,7 +35,11 @@ export default function Header () {
                         <Contact />
                         Selecionar
                     </Button>
-                    <Button className="bg-cyan-700 cursor-pointer hover:bg-cyan-500">
+                    <Button className="bg-cyan-700 cursor-pointer hover:bg-cyan-500"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setIsDialogAdicionarAgendaOpen(true);
+                        }}>
                         
                         <BookPlus />
                         Adicionar
@@ -42,6 +48,7 @@ export default function Header () {
 
             </header>
             <SelecionarAgenda isOpen={isDialogSelecionarAgendaOpen} onOpenChange={setIsDialogSelecionarAgendaOpen} agendas={agendas}/>
+            <AdicionarAgenda isOpen={isDialogAdicionarAgendaOpen} onOpenChange={setIsDialogAdicionarAgendaOpen}/>
         </>
     );
 }
