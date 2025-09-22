@@ -3,6 +3,7 @@ package com.agenda.backend.service;
 import com.agenda.backend.dto.AgendaListResponseDTO; 
 import com.agenda.backend.dto.AgendaMapResponseDTO;
 import com.agenda.backend.dto.AgendaTypedResponse;
+import com.agenda.backend.dto.ContatoRequestDTO;
 import com.agenda.backend.dto.ContatoResponseDTO; 
 import com.agenda.backend.dto.CreateAgendaDTO; 
 import com.agenda.backend.entity.Agenda; 
@@ -132,7 +133,7 @@ public class AgendaServiceTest {
     } 
 
     @Test 
-    void converterAgendaParaList() throws Exception { 
+    void converterAgendaParaListDTO() throws Exception { 
         Contato contato = new ContatoImpl(); 
         contato.setId(10L); 
         contato.setNome("Luiza"); 
@@ -160,7 +161,7 @@ public class AgendaServiceTest {
     } 
     
     @Test 
-    void converterAgendaParaMap() throws Exception { 
+    void converterAgendaParaMapDTO() throws Exception { 
         Contato contato = new ContatoImpl(); 
         contato.setId(20L); 
         contato.setNome("Luiz"); 
@@ -189,7 +190,7 @@ public class AgendaServiceTest {
     }
 
     @Test
-    void converterAgendaSemContatosParaList() throws Exception {
+    void converterAgendaSemContatosParaListDTO() throws Exception {
         AgendaList agendaList = new AgendaList();
         agendaList.setId(99L);
         agendaList.setNome("Agenda Vazia");
@@ -205,7 +206,7 @@ public class AgendaServiceTest {
     }
 
     @Test
-    void converterAgendaSemContatosParaMap() throws Exception {
+    void converterAgendaSemContatosParaMapDTO() throws Exception {
         AgendaMap agendaMap = new AgendaMap();
         agendaMap.setId(100L);
         agendaMap.setNome("Agenda Map Vazia");
@@ -218,5 +219,217 @@ public class AgendaServiceTest {
         assertEquals(100L, dto.id());
         assertEquals("Agenda Map Vazia", dto.nome());
         assertTrue(dto.contatos().isEmpty());
+    }
+
+    @Test
+    void deveRetornarTodasAgendas() {
+        AgendaList agenda1 = new AgendaList();
+        agenda1.setId(1L);
+        agenda1.setNome("Agenda 1");
+
+        AgendaMap agenda2 = new AgendaMap();
+        agenda2.setId(2L);
+        agenda2.setNome("Agenda 2");
+
+        when(agendaRepository.findAll()).thenReturn(List.of(agenda1, agenda2));
+
+        var agendas = agendaService.getAllAgendas();
+
+        assertEquals(2, agendas.size());
+        assertTrue(agendas.stream().anyMatch(a -> a.nome().equals("Agenda 1")));
+        assertTrue(agendas.stream().anyMatch(a -> a.nome().equals("Agenda 2")));
+    }
+
+    @Test
+    void deveRetornarAgendaPorId() {
+        AgendaList agenda = new AgendaList();
+        agenda.setId(10L);
+        agenda.setNome("Agenda Teste");
+
+        when(agendaRepository.findById(10L)).thenReturn(Optional.of(agenda));
+
+        var response = agendaService.getAgendaById(10L);
+
+        assertEquals("Agenda Teste", response.nome());
+        assertEquals(10L, response.id());
+    }
+
+    @Test
+    void erroAgendaNaoEncontradaPorId() {
+        when(agendaRepository.findById(99L)).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+            agendaService.getAgendaById(99L);
+        });
+
+        assertTrue(ex.getMessage().contains("Agenda não encontrada"));
+    }
+
+    @Test
+    void deveDeletarAgenda() {
+        when(agendaRepository.existsById(5L)).thenReturn(true);
+
+        agendaService.deleteAgenda(5L);
+
+        verify(agendaRepository, times(1)).deleteById(5L);
+    }
+
+    @Test
+    void erroDeletarAgendaNaoExistente() {
+        when(agendaRepository.existsById(8L)).thenReturn(false);
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+            agendaService.deleteAgenda(8L);
+        });
+
+        assertTrue(ex.getMessage().contains("Agenda não encontrada"));
+    }
+
+    @Test
+    void deveAdicionarContatoNaAgenda() {
+        AgendaList agenda = new AgendaList();
+        agenda.setId(1L);
+
+        ContatoRequestDTO request = new ContatoRequestDTO("Maria", "12345");
+
+        when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
+        when(agendaRepository.save(any(Agenda.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        var response = agendaService.addContatoToAgenda(1L, request);
+
+        assertEquals("Maria", response.nome());
+        assertEquals("12345", response.telefone());
+        assertNotNull(response.id());
+    }
+
+    @Test
+    void erroAdicionarContatoComTelefoneDuplicado() {
+        Contato contatoExistente = new ContatoImpl();
+        contatoExistente.setId(2L);
+        contatoExistente.setNome("João");
+        contatoExistente.setTelefone("99999");
+
+        AgendaList agenda = new AgendaList();
+        agenda.setId(1L);
+        agenda.addContato(contatoExistente);
+
+        ContatoRequestDTO request = new ContatoRequestDTO("Maria", "99999");
+
+        when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            agendaService.addContatoToAgenda(1L, request);
+        });
+
+        assertTrue(ex.getMessage().contains("Já existe um contato com este telefone"));
+    }
+
+    @Test
+    void deveRemoverContatoDaAgenda() {
+        Contato contato = new ContatoImpl();
+        contato.setId(3L);
+        contato.setNome("Pedro");
+        contato.setTelefone("123");
+
+        AgendaList agenda = new AgendaList();
+        agenda.setId(1L);
+        agenda.addContato(contato);
+
+        when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
+        when(agendaRepository.save(any(Agenda.class))).thenReturn(agenda);
+
+        agendaService.removeContatoFromAgenda(1L, 3L);
+
+        assertTrue(agenda.getContatos().isEmpty());
+    }
+
+    @Test
+    void erroRemoverContatoNaoExistente() {
+        AgendaList agenda = new AgendaList();
+        agenda.setId(1L);
+
+        when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+            agendaService.removeContatoFromAgenda(1L, 10L);
+        });
+
+        assertTrue(ex.getMessage().contains("Contato não encontrado"));
+    }
+
+    @Test
+    void deveBuscarContatosPorTelefone() {
+        Contato contato1 = new ContatoImpl();
+        contato1.setId(1L);
+        contato1.setNome("Alice");
+        contato1.setTelefone("1111");
+
+        Contato contato2 = new ContatoImpl();
+        contato2.setId(2L);
+        contato2.setNome("Bob");
+        contato2.setTelefone("2222");
+
+        AgendaList agenda = new AgendaList();
+        agenda.setId(1L);
+        agenda.addContato(contato1);
+        agenda.addContato(contato2);
+
+        when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
+
+        var contatos = agendaService.getContatos(1L, "1111");
+
+        assertEquals(1, contatos.size());
+        assertEquals("Alice", contatos.iterator().next().nome());
+    }
+
+    @Test
+    void deveBuscarTodosContatosSemFiltro() {
+        Contato contato = new ContatoImpl();
+        contato.setId(1L);
+        contato.setNome("Carlos");
+        contato.setTelefone("3333");
+
+        AgendaList agenda = new AgendaList();
+        agenda.setId(1L);
+        agenda.addContato(contato);
+
+        when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
+
+        var contatos = agendaService.getContatos(1L, null);
+
+        assertEquals(1, contatos.size());
+        assertEquals("Carlos", contatos.iterator().next().nome());
+    }
+
+    @Test
+    void deveConverterAgendaDeListParaMap() {
+        AgendaList agendaOriginal = new AgendaList();
+        agendaOriginal.setId(1L);
+
+        AgendaMap agendaConvertida = new AgendaMap();
+        agendaConvertida.setId(1L);
+
+        when(agendaRepository.findById(1L))
+                .thenReturn(Optional.of(agendaOriginal)) // busca original
+                .thenReturn(Optional.of(agendaConvertida)); // busca após update
+
+        // mock updateAgendaType (void)
+        doNothing().when(agendaRepository).updateAgendaType(1L, "MAP");
+
+        var response = agendaService.convertAgendaType(1L);
+
+        assertNotNull(response);
+        assertEquals(1L, response.id());
+    }
+
+    @Test
+    void erroConverterAgendaNaoExistente() {
+        when(agendaRepository.findById(5L)).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+            agendaService.convertAgendaType(5L);
+        });
+
+        assertTrue(ex.getMessage().contains("Agenda não encontrada"));
     }
 }
