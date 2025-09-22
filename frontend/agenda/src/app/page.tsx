@@ -22,6 +22,8 @@ export default function Home() {
     {id: "5", nome: "Eduardo Américo", telefone: "(71) 9 1234-4321"},
   ]
 
+  
+
 
   return (
     <div className="flex flex-col gap-8">
@@ -91,6 +93,7 @@ export default function Home() {
       
       <AdicionarContato isOpen={isDialogAdicionarContatoOpen} onOpenChange={setIsDialogAdicionarContatoOpen} />
       <ApagarContato isOpen={isDialogApagarContatoOpen} onOpenChange={setIsDialogApagarContatoOpen}/>
+      
     </div>
   );
 }
