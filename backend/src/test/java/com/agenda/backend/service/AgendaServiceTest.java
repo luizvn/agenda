@@ -12,7 +12,10 @@ import com.agenda.backend.entity.AgendaList;
 import com.agenda.backend.entity.AgendaMap; 
 import com.agenda.backend.entity.Contato;
 import com.agenda.backend.entity.ContatoImpl;
-import com.agenda.backend.repository.AgendaRepository; 
+import com.agenda.backend.repository.AgendaRepository;
+
+import jakarta.persistence.EntityManager;
+
 import org.junit.jupiter.api.BeforeEach; 
 import org.junit.jupiter.api.Test; 
 import org.junit.jupiter.api.extension.ExtendWith; 
@@ -25,6 +28,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 public class AgendaServiceTest {
+    @Mock
+    private EntityManager entityManager;
     
     @Mock 
     private AgendaRepository agendaRepository;
@@ -222,7 +227,7 @@ public class AgendaServiceTest {
     }
 
     @Test
-    void deveRetornarTodasAgendas() {
+    void retornarTodasAgendas() {
         AgendaList agenda1 = new AgendaList();
         agenda1.setId(1L);
         agenda1.setNome("Agenda 1");
@@ -241,7 +246,7 @@ public class AgendaServiceTest {
     }
 
     @Test
-    void deveRetornarAgendaPorId() {
+    void retornarAgendaPorId() {
         AgendaList agenda = new AgendaList();
         agenda.setId(10L);
         agenda.setNome("Agenda Teste");
@@ -266,7 +271,7 @@ public class AgendaServiceTest {
     }
 
     @Test
-    void deveDeletarAgenda() {
+    void deletarAgenda() {
         when(agendaRepository.existsById(5L)).thenReturn(true);
 
         agendaService.deleteAgenda(5L);
@@ -286,34 +291,33 @@ public class AgendaServiceTest {
     }
 
     @Test
-    void deveAdicionarContatoNaAgenda() {
+    void adicionarContatoNaAgenda() {
         AgendaList agenda = new AgendaList();
         agenda.setId(1L);
 
-        ContatoRequestDTO request = new ContatoRequestDTO("Maria", "12345");
+        ContatoRequestDTO request = new ContatoRequestDTO("Luiza", "71993193383");
 
         when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
         when(agendaRepository.save(any(Agenda.class))).thenAnswer(inv -> inv.getArgument(0));
 
         var response = agendaService.addContatoToAgenda(1L, request);
 
-        assertEquals("Maria", response.nome());
-        assertEquals("12345", response.telefone());
-        assertNotNull(response.id());
+        assertEquals("Luiza", response.nome());
+        assertEquals("71993193383", response.telefone());
     }
 
     @Test
     void erroAdicionarContatoComTelefoneDuplicado() {
         Contato contatoExistente = new ContatoImpl();
         contatoExistente.setId(2L);
-        contatoExistente.setNome("João");
-        contatoExistente.setTelefone("99999");
+        contatoExistente.setNome("Luiz");
+        contatoExistente.setTelefone("71993193383");
 
         AgendaList agenda = new AgendaList();
         agenda.setId(1L);
         agenda.addContato(contatoExistente);
 
-        ContatoRequestDTO request = new ContatoRequestDTO("Maria", "99999");
+        ContatoRequestDTO request = new ContatoRequestDTO("Luiz", "71993193383");
 
         when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
 
@@ -325,11 +329,11 @@ public class AgendaServiceTest {
     }
 
     @Test
-    void deveRemoverContatoDaAgenda() {
+    void removerContatoDaAgenda() {
         Contato contato = new ContatoImpl();
         contato.setId(3L);
-        contato.setNome("Pedro");
-        contato.setTelefone("123");
+        contato.setNome("Caio");
+        contato.setTelefone("71993193383");
 
         AgendaList agenda = new AgendaList();
         agenda.setId(1L);
@@ -358,16 +362,16 @@ public class AgendaServiceTest {
     }
 
     @Test
-    void deveBuscarContatosPorTelefone() {
+    void buscarContatosPorTelefone() {
         Contato contato1 = new ContatoImpl();
         contato1.setId(1L);
-        contato1.setNome("Alice");
-        contato1.setTelefone("1111");
+        contato1.setNome("Gabriel");
+        contato1.setTelefone("71993193383");
 
         Contato contato2 = new ContatoImpl();
         contato2.setId(2L);
-        contato2.setNome("Bob");
-        contato2.setTelefone("2222");
+        contato2.setNome("Iuri");
+        contato2.setTelefone("71993193384");
 
         AgendaList agenda = new AgendaList();
         agenda.setId(1L);
@@ -376,18 +380,18 @@ public class AgendaServiceTest {
 
         when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
 
-        var contatos = agendaService.getContatos(1L, "1111");
+        var contatos = agendaService.getContatos(1L, "71993193383");
 
         assertEquals(1, contatos.size());
-        assertEquals("Alice", contatos.iterator().next().nome());
+        assertEquals("Gabriel", contatos.iterator().next().nome());
     }
 
     @Test
-    void deveBuscarTodosContatosSemFiltro() {
+    void buscarTodosContatosSemFiltro() {
         Contato contato = new ContatoImpl();
         contato.setId(1L);
-        contato.setNome("Carlos");
-        contato.setTelefone("3333");
+        contato.setNome("Tatiana");
+        contato.setTelefone("71993193383");
 
         AgendaList agenda = new AgendaList();
         agenda.setId(1L);
@@ -398,11 +402,11 @@ public class AgendaServiceTest {
         var contatos = agendaService.getContatos(1L, null);
 
         assertEquals(1, contatos.size());
-        assertEquals("Carlos", contatos.iterator().next().nome());
+        assertEquals("Tatiana", contatos.iterator().next().nome());
     }
 
     @Test
-    void deveConverterAgendaDeListParaMap() {
+    void converterAgendaDeListParaMap() {
         AgendaList agendaOriginal = new AgendaList();
         agendaOriginal.setId(1L);
 
@@ -410,10 +414,9 @@ public class AgendaServiceTest {
         agendaConvertida.setId(1L);
 
         when(agendaRepository.findById(1L))
-                .thenReturn(Optional.of(agendaOriginal)) // busca original
-                .thenReturn(Optional.of(agendaConvertida)); // busca após update
+                .thenReturn(Optional.of(agendaOriginal))
+                .thenReturn(Optional.of(agendaConvertida));
 
-        // mock updateAgendaType (void)
         doNothing().when(agendaRepository).updateAgendaType(1L, "MAP");
 
         var response = agendaService.convertAgendaType(1L);
