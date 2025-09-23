@@ -4,22 +4,51 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Agenda } from "@/core/agenda";
 import { useState } from "react";
-import ApagarContato from "./ApagarContato";
+import ApagarAgenda from "./ApagarAgenda";
+import { excluirAgenda } from "@/service/agendaService";
 
 interface SelecionarAgendaProps {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
     agendas: Agenda[];
     onAgendaSelecionada: (agenda: Agenda) => void;
+    onAgendaExcluida?: (agendaExcluida: Agenda) => void; 
 }
 
-export default function SelecionarAgenda({ isOpen, onOpenChange, agendas, onAgendaSelecionada }: SelecionarAgendaProps) {
-    const [isDialogApagarContatoOpen, setIsDialogApagarContatoOpen] = useState(false);
+export default function SelecionarAgenda({ isOpen, onOpenChange, agendas, onAgendaSelecionada, onAgendaExcluida }: SelecionarAgendaProps) {
+    const [isDialogApagarAgendaOpen, setIsDialogApagarAgendaOpen] = useState(false);
+    const [agendaParaExcluir, setAgendaParaExcluir] = useState<Agenda | null>(null);
     const [busca, setBusca] = useState("");
 
     const agendasFiltradas = agendas.filter(agenda =>
         agenda.nome.toLowerCase().includes(busca.toLowerCase())
     );
+
+    const handleAbrirDialogExcluirAgenda = (agenda: Agenda) => {
+        setAgendaParaExcluir(agenda);
+        setIsDialogApagarAgendaOpen(true);
+    };
+
+    const handleExcluirAgenda = async () => {
+        if (!agendaParaExcluir) return;
+
+        try {
+            await excluirAgenda(agendaParaExcluir.id);
+            
+            setIsDialogApagarAgendaOpen(false);
+            
+            if (onAgendaExcluida) {
+                onAgendaExcluida(agendaParaExcluir);
+            }
+            
+            setAgendaParaExcluir(null);
+            alert('Agenda excluída com sucesso!');
+            
+        } catch (error) {
+            console.error("Erro ao excluir agenda:", error);
+            alert("Erro ao excluir agenda");
+        }
+    };
 
     return(
         <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
@@ -58,11 +87,14 @@ export default function SelecionarAgenda({ isOpen, onOpenChange, agendas, onAgen
                                     >
                                         Abrir
                                     </Button>
-                                    <Button size={"icon"} variant={"ghost"} 
+                                    <Button 
+                                        size={"icon"} 
+                                        variant={"ghost"} 
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            setIsDialogApagarContatoOpen(true);
-                                        }}>
+                                            handleAbrirDialogExcluirAgenda(agenda);
+                                        }}
+                                    >
                                         <Trash2 className="text-red-500"/>
                                     </Button>
                                 </div>
@@ -70,7 +102,13 @@ export default function SelecionarAgenda({ isOpen, onOpenChange, agendas, onAgen
                             </div>
                         ))}
                     </div>
-                    <ApagarContato isOpen={isDialogApagarContatoOpen} onOpenChange={setIsDialogApagarContatoOpen} />
+                    
+                    <ApagarAgenda 
+                        isOpen={isDialogApagarAgendaOpen}
+                        onOpenChange={setIsDialogApagarAgendaOpen}
+                        onConfirmar={handleExcluirAgenda}
+                        agenda={agendaParaExcluir}
+                    />
                 </div>
             </AlertDialogContent>
         </AlertDialog>

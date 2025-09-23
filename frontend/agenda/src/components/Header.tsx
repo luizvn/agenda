@@ -14,36 +14,41 @@ export default function Header () {
     const [agendas, setAgendas] = useState<Agenda[]>([]);
     const [agendaSelecionada, setAgendaSelecionada] = useState<Agenda | null>(null);
 
-    useEffect(() => {
-        const handleCarregarAgendas = async () => {
-            try {
-                const response = await getListaAgendas();
-                setAgendas(response.data);
-                
-                // Verificar se há uma agenda salva no localStorage
-                const agendaSalva = localStorage.getItem('agendaSelecionada');
-                if (agendaSalva) {
-                    const agenda = JSON.parse(agendaSalva);
-                    setAgendaSelecionada(agenda);
-                } else if (response.data.length > 0) {
-                    // Seleciona a primeira agenda por padrão, se existir
-                    setAgendaSelecionada(response.data[0]);
-                    localStorage.setItem('agendaSelecionada', JSON.stringify(response.data[0]));
-                }
-            } catch(e: any) {
-                console.error(e);
+    const carregarAgendas = async () => {
+        try {
+            const response = await getListaAgendas();
+            setAgendas(response.data);
+            
+            const agendaSalva = localStorage.getItem('agendaSelecionada');
+            if (agendaSalva) {
+                const agenda = JSON.parse(agendaSalva);
+                setAgendaSelecionada(agenda);
+            } else if (response.data.length > 0) {
+                setAgendaSelecionada(response.data[0]);
+                localStorage.setItem('agendaSelecionada', JSON.stringify(response.data[0]));
             }
+        } catch(e: any) {
+            console.error(e);
         }
+    };
 
-        handleCarregarAgendas();
+    useEffect(() => {
+        carregarAgendas();
     }, []);
 
     const handleAgendaSelecionada = (agenda: Agenda) => {
         setAgendaSelecionada(agenda);
         setIsDialogSelecionarAgendaOpen(false);
-        
-        // Salvar no localStorage para o Home component acessar
         localStorage.setItem('agendaSelecionada', JSON.stringify(agenda));
+    };
+
+    const handleAgendaExcluida = (agendaExcluida: Agenda) => {
+        carregarAgendas();
+        
+        if (agendaSelecionada && agendaExcluida.id === agendaSelecionada.id) {
+            setAgendaSelecionada(null);
+            localStorage.removeItem('agendaSelecionada');
+        }
     };
 
     return(
@@ -76,11 +81,12 @@ export default function Header () {
                 onOpenChange={setIsDialogSelecionarAgendaOpen} 
                 agendas={agendas}
                 onAgendaSelecionada={handleAgendaSelecionada}
+                onAgendaExcluida={handleAgendaExcluida}
             />
             <AdicionarAgenda 
                 isOpen={isDialogAdicionarAgendaOpen} 
                 onOpenChange={setIsDialogAdicionarAgendaOpen}
-                onAgendaCriada={() => window.location.reload()}
+                onAgendaCriada={carregarAgendas}
             />
         </>
     );
