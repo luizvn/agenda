@@ -9,9 +9,10 @@ import { criarAgenda } from "@/service/agendaService";
 interface AdicionarAgendaProps {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
+    onAgendaCriada?: () => void;
 }
 
-export default function AdicionarAgenda({ isOpen, onOpenChange }: AdicionarAgendaProps) {
+export default function AdicionarAgenda({ isOpen, onOpenChange, onAgendaCriada }: AdicionarAgendaProps) {
     const [nome, setNome] = useState("");
     const [tipo, setTipo] = useState<"LIST" | "MAP">("LIST"); // ← Corrigido para LIST e MAP
 
@@ -32,8 +33,11 @@ export default function AdicionarAgenda({ isOpen, onOpenChange }: AdicionarAgend
             setTipo("LIST");
             onOpenChange(false);
             
-            // Recarregar a página para atualizar a lista
-            window.location.reload();
+            if (onAgendaCriada) {
+                onAgendaCriada();
+            } else {
+                window.location.reload();
+    }
             
         } catch (error: any) {
             console.error("Erro ao criar agenda:", error);
