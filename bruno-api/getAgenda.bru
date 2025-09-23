@@ -1,0 +1,15 @@
+meta {
+  name: getAgenda
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8080/agendas
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

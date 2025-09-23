@@ -30,8 +30,9 @@ public class AgendaMap extends Agenda{
         if (contatos.containsKey(contato.getTelefone())) {
             return false;
         }
-        contato.setAgenda(this);
+        
         contatos.put(contato.getTelefone(), contato);
+        contato.setAgenda(this);
         return true;
     }
 

@@ -6,4 +6,4 @@ public record AgendaListResponseDTO(
     Long id,
     String nome,
     List<ContatoResponseDTO> contatos
-) implements AgendaResponse {}
+) implements AgendaTypedResponse {}

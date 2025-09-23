@@ -6,4 +6,4 @@ public record AgendaMapResponseDTO(
     Long id,
     String nome,
     Map<String, ContatoResponseDTO> contatos
-) implements AgendaResponse {}
+) implements AgendaTypedResponse {}

@@ -1,10 +1,11 @@
 package com.agenda.backend.controller;
 
 import java.net.URI;
-import java.util.List;
+import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.agenda.backend.dto.AgendaGetAllResponseDTO;
-import com.agenda.backend.dto.AgendaResponse;
+import com.agenda.backend.dto.AgendaResponseDTO;
+import com.agenda.backend.dto.AgendaTypedResponse;
 import com.agenda.backend.dto.ContatoRequestDTO;
 import com.agenda.backend.dto.ContatoResponseDTO;
 import com.agenda.backend.dto.CreateAgendaDTO;
@@ -26,14 +27,15 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/agendas")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AgendaController {
     
     @Autowired
     private AgendaService agendaService;
 
     @PostMapping
-    public ResponseEntity<AgendaResponse> createAgenda(@RequestBody @Valid CreateAgendaDTO requestDto) {
-        AgendaResponse savedAgenda = agendaService.createAgenda(requestDto);
+    public ResponseEntity<AgendaTypedResponse> createAgenda(@RequestBody @Valid CreateAgendaDTO requestDto) {
+        AgendaTypedResponse savedAgenda = agendaService.createAgenda(requestDto);
 
         URI location = ServletUriComponentsBuilder
             .fromCurrentRequest()
@@ -45,15 +47,15 @@ public class AgendaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AgendaGetAllResponseDTO>> getAllAgendas() {
-        List<AgendaGetAllResponseDTO> agendas = agendaService.getAllAgendas();
+    public ResponseEntity<Collection<AgendaResponseDTO>> getAgendas(@RequestParam(required = false) String nome) {
+        Collection<AgendaResponseDTO> agendas = agendaService.getAgendas(nome);
 
         return ResponseEntity.ok(agendas);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AgendaResponse> getAgendaById(@PathVariable @Valid Long id) {
-        AgendaResponse agenda = agendaService.getAgendaById(id);
+    public ResponseEntity<AgendaResponseDTO> getAgendaById(@PathVariable @Valid Long id) {
+        AgendaResponseDTO agenda = agendaService.getAgendaById(id);
 
         return ResponseEntity.ok(agenda);
     }
@@ -86,10 +88,17 @@ public class AgendaController {
     }
 
     @GetMapping("/{agendaId}/contatos")
-    public ResponseEntity<List<ContatoResponseDTO>> searchContatoByTelefone(@PathVariable Long agendaId, @RequestParam String telefone) {
-        List<ContatoResponseDTO> contatos = agendaService.searchContatoByTelefone(agendaId, telefone);
+    public ResponseEntity<Collection<ContatoResponseDTO>> getContatos(@PathVariable Long agendaId, @RequestParam(required = false) String telefone) {
+        Collection<ContatoResponseDTO> contatos = agendaService.getContatos(agendaId, telefone);
 
         return ResponseEntity.ok(contatos);
+    }
+
+    @PostMapping("/{id}/convert")
+    public ResponseEntity<AgendaTypedResponse> convertAgendaType(@PathVariable Long id) {
+        AgendaTypedResponse agendaConvertida = agendaService.convertAgendaType(id);
+
+        return ResponseEntity.ok(agendaConvertida);
     }
 
 }
