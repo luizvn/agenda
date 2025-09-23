@@ -255,7 +255,7 @@ public class AgendaServiceTest {
         agenda2.setId(2L);
         agenda2.setNome("Agenda 2");
 
-        when(agendaRepository.findAll()).thenReturn(List.of(agenda1, agenda2));
+        when(agendaRepository.findByNomeContaining("Agenda do Luiz")).thenReturn(List.of(agenda1));
 
         var agendas = agendaService.getAgendas("Agenda do Luiz");
 
