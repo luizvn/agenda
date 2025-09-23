@@ -53,14 +53,12 @@ public class AgendaService {
 
     @Transactional(readOnly = true)
     public Collection<AgendaResponseDTO> getAgendas(String nome) {
-        Collection<Agenda> allAgendas = agendaRepository.findAll();
-
+        
         Collection<Agenda> agendasEncontradas;
         if(nome != null && !nome.isBlank()){
-            agendasEncontradas = allAgendas.stream()
-            .filter(agenda -> agenda.getNome().contains(nome))
-            .collect(Collectors.toList());
+            agendasEncontradas = agendaRepository.findByNomeContaining(nome);
         }else{
+            Collection<Agenda> allAgendas = agendaRepository.findAll();
             agendasEncontradas = allAgendas;
         }
 
