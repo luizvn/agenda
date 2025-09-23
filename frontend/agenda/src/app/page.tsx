@@ -1,3 +1,4 @@
+// No page.tsx (Home)
 "use client"
 
 import AdicionarContato from "@/components/AdicionarContato";
@@ -7,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeftRight, Phone, Search, Trash2, UserPlus } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getContatosDaAgenda, removerContato } from "@/service/agendaService";
+import { getContatosDaAgenda, removerContato, converterTipoAgenda } from "@/service/agendaService"; // Importe a função
 import { Contato } from "@/core/contato";
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
     const [busca, setBusca] = useState("");
     const [agendaId, setAgendaId] = useState<number | null>(null);
     const [contatoParaExcluir, setContatoParaExcluir] = useState<Contato | null>(null);
+    const [convertendo, setConvertendo] = useState(false); // Estado para loading
 
     useEffect(() => {
         const carregarContatos = async () => {
@@ -40,6 +42,38 @@ export default function Home() {
             setAgendaId(agenda.id);
         }
     }, []);
+
+    const handleConverterAgenda = async () => {
+        if (!agendaId) {
+            alert("Selecione uma agenda primeiro");
+            return;
+        }
+
+        try {
+            setConvertendo(true);
+            
+            const response = await converterTipoAgenda(agendaId);
+            const agendaConvertida = response.data;
+            
+            localStorage.setItem('agendaSelecionada', JSON.stringify(agendaConvertida));
+            
+            const contatosResponse = await getContatosDaAgenda(agendaId, busca || undefined);
+            setContatos(contatosResponse.data);
+            
+            alert(`Agenda convertida com sucesso! ${agendaConvertida.nome}`);
+            
+        } catch (error: any) {
+            console.error("Erro ao converter agenda:", error);
+            
+            if (error.response?.status === 400) {
+                alert("Erro: " + (error.response.data?.message || "Não foi possível converter a agenda"));
+            } else {
+                alert("Erro ao converter agenda. Tente novamente.");
+            }
+        } finally {
+            setConvertendo(false);
+        }
+    };
 
     const handleBuscarContato = (e: React.FormEvent) => {
         e.preventDefault();
@@ -145,9 +179,13 @@ export default function Home() {
 
             {/* |=======| BOTÕES ABAIXO |=======| */}
             <div className="flex flex-row justify-between">
-                <Button className="bg-cyan-700 cursor-pointer hover:bg-cyan-500">
+                <Button 
+                    className="bg-cyan-700 cursor-pointer hover:bg-cyan-500"
+                    onClick={handleConverterAgenda}
+                    disabled={!agendaId || convertendo} // Desabilita durante a conversão
+                >
                     <ArrowLeftRight />
-                    Converter Agenda
+                    {convertendo ? "Convertendo..." : "Converter Agenda"}
                 </Button>
                 <Button 
                     className="bg-cyan-700 cursor-pointer hover:bg-cyan-500"
