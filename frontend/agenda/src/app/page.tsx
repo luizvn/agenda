@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeftRight, Phone, Search, Trash2, UserPlus } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getContatosDaAgenda } from "@/service/agendaService";
+import { getContatosDaAgenda, removerContato } from "@/service/agendaService";
 import { Contato } from "@/core/contato";
 
 export default function Home() {
@@ -16,8 +16,8 @@ export default function Home() {
     const [contatos, setContatos] = useState<Contato[]>([]);
     const [busca, setBusca] = useState("");
     const [agendaId, setAgendaId] = useState<number | null>(null);
+    const [contatoParaExcluir, setContatoParaExcluir] = useState<Contato | null>(null);
 
-    // Carrega contatos quando a agenda é selecionada ou quando a busca muda
     useEffect(() => {
         const carregarContatos = async () => {
             if (!agendaId) return;
@@ -33,9 +33,7 @@ export default function Home() {
         carregarContatos();
     }, [agendaId, busca]);
 
-    // Busca agendaId do localStorage ou contexto (você pode ajustar isso)
     useEffect(() => {
-        // Exemplo: buscar do localStorage ou contexto global
         const agendaSalva = localStorage.getItem('agendaSelecionada');
         if (agendaSalva) {
             const agenda = JSON.parse(agendaSalva);
@@ -45,7 +43,35 @@ export default function Home() {
 
     const handleBuscarContato = (e: React.FormEvent) => {
         e.preventDefault();
-        // A busca já é feita automaticamente pelo useEffect
+    };
+
+    const handleAbrirDialogExcluir = (contato: Contato) => {
+        setContatoParaExcluir(contato);
+        setIsDialogApagarContatoOpen(true);
+    };
+
+    const handleExcluirContato = async () => {
+        if (!contatoParaExcluir || !agendaId) return;
+
+        try {
+            await removerContato(agendaId, contatoParaExcluir.id);
+            
+            setContatos(contatos.filter(c => c.id !== contatoParaExcluir.id));
+            setContatoParaExcluir(null);
+            setIsDialogApagarContatoOpen(false);
+            
+        } catch (error) {
+            console.error("Erro ao excluir contato:", error);
+            alert("Erro ao excluir contato");
+        }
+    };
+
+    const handleContatoAdicionado = () => {
+        if (agendaId) {
+            getContatosDaAgenda(agendaId, busca || undefined)
+                .then(response => setContatos(response.data))
+                .catch(error => console.error("Erro ao recarregar contatos:", error));
+        }
     };
 
     return (
@@ -104,7 +130,7 @@ export default function Home() {
                                             variant={"ghost"}
                                             onClick={(e) => {
                                                 e.preventDefault();
-                                                setIsDialogApagarContatoOpen(true);
+                                                handleAbrirDialogExcluir(contato);
                                             }}
                                         >
                                             <Trash2 className="text-red-500"/>
@@ -140,11 +166,13 @@ export default function Home() {
                 isOpen={isDialogAdicionarContatoOpen} 
                 onOpenChange={setIsDialogAdicionarContatoOpen} 
                 agendaId={agendaId}
-                onContatoAdicionado={() => window.location.reload()} // Ou atualizar estado
+                onContatoAdicionado={handleContatoAdicionado}
             />
             <ApagarContato 
                 isOpen={isDialogApagarContatoOpen} 
                 onOpenChange={setIsDialogApagarContatoOpen}
+                onConfirmar={handleExcluirContato}
+                contato={contatoParaExcluir}
             />
         </div>
     );
