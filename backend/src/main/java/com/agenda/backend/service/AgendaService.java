@@ -52,9 +52,19 @@ public class AgendaService {
     }
 
     @Transactional(readOnly = true)
-    public Collection<AgendaResponseDTO> getAllAgendas() {
-        Collection<Agenda> agendas = agendaRepository.findAll();
-        return agendas.stream()
+    public Collection<AgendaResponseDTO> getAgendas(String nome) {
+        Collection<Agenda> allAgendas = agendaRepository.findAll();
+
+        Collection<Agenda> agendasEncontradas;
+        if(nome != null && !nome.isBlank()){
+            agendasEncontradas = allAgendas.stream()
+            .filter(agenda -> agenda.getNome().contains(nome))
+            .collect(Collectors.toList());
+        }else{
+            agendasEncontradas = allAgendas;
+        }
+
+        return agendasEncontradas.stream()
                 .map(this::mapearAgendaResponseDTO)
                 .collect(Collectors.toList());
     }

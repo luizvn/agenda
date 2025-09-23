@@ -45,8 +45,8 @@ public class AgendaController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<AgendaResponseDTO>> getAllAgendas() {
-        Collection<AgendaResponseDTO> agendas = agendaService.getAllAgendas();
+    public ResponseEntity<Collection<AgendaResponseDTO>> getAgendas(@RequestParam(required = false) String nome) {
+        Collection<AgendaResponseDTO> agendas = agendaService.getAgendas(nome);
 
         return ResponseEntity.ok(agendas);
     }
