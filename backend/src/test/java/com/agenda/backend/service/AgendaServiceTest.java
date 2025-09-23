@@ -238,7 +238,7 @@ public class AgendaServiceTest {
 
         when(agendaRepository.findAll()).thenReturn(List.of(agenda1, agenda2));
 
-        var agendas = agendaService.getAgendas();
+        var agendas = agendaService.getAgendas(null);
 
         assertEquals(2, agendas.size());
         assertTrue(agendas.stream().anyMatch(a -> a.nome().equals("Agenda 1")));
