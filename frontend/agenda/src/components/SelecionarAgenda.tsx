@@ -3,26 +3,55 @@ import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle } 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Agenda } from "@/core/agenda";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ApagarAgenda from "./ApagarAgenda";
-import { excluirAgenda } from "@/service/agendaService";
+import { excluirAgenda, getAgendas } from "@/service/agendaService";
 
 interface SelecionarAgendaProps {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
-    agendas: Agenda[];
     onAgendaSelecionada: (agenda: Agenda) => void;
     onAgendaExcluida?: (agendaExcluida: Agenda) => void; 
 }
 
-export default function SelecionarAgenda({ isOpen, onOpenChange, agendas, onAgendaSelecionada, onAgendaExcluida }: SelecionarAgendaProps) {
+export default function SelecionarAgenda({ isOpen, onOpenChange, onAgendaSelecionada, onAgendaExcluida }: SelecionarAgendaProps) {
     const [isDialogApagarAgendaOpen, setIsDialogApagarAgendaOpen] = useState(false);
     const [agendaParaExcluir, setAgendaParaExcluir] = useState<Agenda | null>(null);
     const [busca, setBusca] = useState("");
+    const [agendas, setAgendas] = useState<Agenda[]>([]);
+    const [carregando, setCarregando] = useState(false);
 
-    const agendasFiltradas = agendas.filter(agenda =>
-        agenda.nome.toLowerCase().includes(busca.toLowerCase())
-    );
+    const buscarAgendas = async (termoBusca?: string) => {
+        try {
+            setCarregando(true);
+            const response = await getAgendas(termoBusca);
+            setAgendas(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar agendas:", error);
+            alert("Erro ao carregar agendas");
+            setAgendas([]);
+        } finally {
+            setCarregando(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen) {
+            const timeoutId = setTimeout(() => {
+                buscarAgendas(busca.trim() || undefined);
+            }, 300); 
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [busca, isOpen]);
+
+    useEffect(() => {
+        if (isOpen) {
+            buscarAgendas();
+        } else {
+            setBusca("");
+        }
+    }, [isOpen]);
 
     const handleAbrirDialogExcluirAgenda = (agenda: Agenda) => {
         setAgendaParaExcluir(agenda);
@@ -34,6 +63,8 @@ export default function SelecionarAgenda({ isOpen, onOpenChange, agendas, onAgen
 
         try {
             await excluirAgenda(agendaParaExcluir.id);
+            
+            await buscarAgendas(busca.trim() || undefined);
             
             setIsDialogApagarAgendaOpen(false);
             
@@ -77,30 +108,39 @@ export default function SelecionarAgenda({ isOpen, onOpenChange, agendas, onAgen
 
                     <div className="flex flex-col gap-2 mt-5 overflow-y-auto max-h-40">
                         <div className="bg-gray-400 h-0.5 w-full "></div>
-                        {agendasFiltradas.map((agenda) => (
-                            <div key={agenda.id} >
-                                <div className="flex flex-row justify-between items-center mb-1">
-                                    <p>{agenda.nome}</p>
-                                    <Button 
-                                        className="bg-cyan-700 hover:bg-cyan-500"
-                                        onClick={() => onAgendaSelecionada(agenda)}
-                                    >
-                                        Abrir
-                                    </Button>
-                                    <Button 
-                                        size={"icon"} 
-                                        variant={"ghost"} 
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleAbrirDialogExcluirAgenda(agenda);
-                                        }}
-                                    >
-                                        <Trash2 className="text-red-500"/>
-                                    </Button>
+                        
+                        {carregando ? (
+                            <p className="text-center text-gray-500">Carregando...</p>
+                        ) : agendas.length === 0 ? (
+                            <p className="text-center text-gray-500">
+                                {busca ? 'Nenhuma agenda encontrada' : 'Nenhuma agenda cadastrada'}
+                            </p>
+                        ) : (
+                            agendas.map((agenda) => (
+                                <div key={agenda.id} >
+                                    <div className="flex flex-row justify-between items-center mb-1">
+                                        <p>{agenda.nome}</p>
+                                        <Button 
+                                            className="bg-cyan-700 hover:bg-cyan-500"
+                                            onClick={() => onAgendaSelecionada(agenda)}
+                                        >
+                                            Abrir
+                                        </Button>
+                                        <Button 
+                                            size={"icon"} 
+                                            variant={"ghost"} 
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleAbrirDialogExcluirAgenda(agenda);
+                                            }}
+                                        >
+                                            <Trash2 className="text-red-500"/>
+                                        </Button>
+                                    </div>
+                                    <div className="bg-gray-400 h-0.5 w-full"></div>
                                 </div>
-                                <div className="bg-gray-400 h-0.5 w-full"></div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                     
                     <ApagarAgenda 

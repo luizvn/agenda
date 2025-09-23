@@ -79,7 +79,6 @@ export default function Header () {
             <SelecionarAgenda 
                 isOpen={isDialogSelecionarAgendaOpen} 
                 onOpenChange={setIsDialogSelecionarAgendaOpen} 
-                agendas={agendas}
                 onAgendaSelecionada={handleAgendaSelecionada}
                 onAgendaExcluida={handleAgendaExcluida}
             />
