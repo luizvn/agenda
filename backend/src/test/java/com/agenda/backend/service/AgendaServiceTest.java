@@ -246,6 +246,24 @@ public class AgendaServiceTest {
     }
 
     @Test
+    void retornarAgendaPorNome() {
+        AgendaList agenda1 = new AgendaList();
+        agenda1.setId(1L);
+        agenda1.setNome("Agenda do Luiz");
+
+        AgendaMap agenda2 = new AgendaMap();
+        agenda2.setId(2L);
+        agenda2.setNome("Agenda 2");
+
+        when(agendaRepository.findAll()).thenReturn(List.of(agenda1, agenda2));
+
+        var agendas = agendaService.getAgendas("Agenda do Luiz");
+
+        assertEquals(1, agendas.size());
+        assertTrue(agendas.stream().anyMatch(a -> a.nome().equals("Agenda do Luiz")));
+    }
+
+    @Test
     void retornarAgendaPorId() {
         AgendaList agenda = new AgendaList();
         agenda.setId(10L);
