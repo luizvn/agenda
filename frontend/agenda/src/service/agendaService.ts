@@ -63,3 +63,9 @@ export async function converterTipoAgenda(id: number) {
 export async function getAgendaComContatos(id: number) {
   return api.get<AgendaTypedResponse>(`/agendas/${id}`);
 }
+
+// |=======| GET PARA BUSCAR AS AGENDAS |=======|
+export async function getAgendas(nome?: string){
+  const params = nome ? { nome } : {};
+  return api.get<Agenda[]>('/agendas', { params })
+}
