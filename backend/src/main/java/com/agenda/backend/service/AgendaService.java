@@ -165,6 +165,23 @@ public class AgendaService {
         return mapearAgendaResponse(agendaConvertida);
     }
 
+    @Transactional
+    public void removeContatosByNome(Long agendaId, String nome) {
+        Agenda agenda = agendaRepository.findById(agendaId)
+            .orElseThrow(() -> new RuntimeException("Agenda não encontrada."));
+
+        List<Contato> contatosParaRemover = agenda.getContatos().stream()
+            .filter(contato -> contato.getNome().toLowerCase().startsWith(nome.toLowerCase()))
+            .collect(Collectors.toList());
+
+        if (contatosParaRemover.isEmpty()) {
+            throw new RuntimeException("Nenhum contato encontrado com o nome especificado na agenda.");
+        }
+
+        contatosParaRemover.forEach(agenda::removeContato);
+        agendaRepository.save(agenda);
+    }
+
 
     private AgendaResponseDTO mapearAgendaResponseDTO(Agenda agenda) {
         return new AgendaResponseDTO(agenda.getId(), agenda.getNome());
