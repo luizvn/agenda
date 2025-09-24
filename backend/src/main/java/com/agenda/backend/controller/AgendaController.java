@@ -102,7 +102,7 @@ public class AgendaController {
     }
 
     @DeleteMapping("/{agendaId}/contatos")
-    public ResponseEntity<Void> removeAllContatosFromAgenda(@PathVariable Long agendaId, @RequestParam String nome) {
+    public ResponseEntity<Void> removeContatosByNome(@PathVariable Long agendaId, @RequestParam String nome) {
         agendaService.removeContatosByNome(agendaId, nome);
         
         return ResponseEntity.noContent().build();
