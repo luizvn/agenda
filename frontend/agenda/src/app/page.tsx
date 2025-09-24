@@ -10,6 +10,7 @@ import { ArrowLeftRight, Phone, Search, Trash2, UserPlus } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getContatosDaAgenda, removerContato, converterTipoAgenda } from "@/service/agendaService"; // Importe a função
 import { Contato } from "@/core/contato";
+import ApagarPorNome from "@/components/ApagarPorNome";
 
 export default function Home() {
     const [isDialogAdicionarContatoOpen, setIsDialogAdicionarContatoOpen] = useState(false);
@@ -19,13 +20,14 @@ export default function Home() {
     const [agendaId, setAgendaId] = useState<number | null>(null);
     const [contatoParaExcluir, setContatoParaExcluir] = useState<Contato | null>(null);
     const [convertendo, setConvertendo] = useState(false); // Estado para loading
+    const [isDialogApagarPorNomeOpen, setIsDialogApagarPorNomeOpen] = useState(false);
 
     useEffect(() => {
         const carregarContatos = async () => {
             if (!agendaId) return;
 
             try {
-                const response = await getContatosDaAgenda(agendaId, busca || undefined);
+                const response = await getContatosDaAgenda(agendaId, undefined, busca || undefined);
                 setContatos(response.data);
             } catch (error) {
                 console.error("Erro ao carregar contatos:", error);
@@ -137,44 +139,46 @@ export default function Home() {
                     <h2>Contatos</h2>
                 </div>  
 
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Nome</TableHead>
-                            <TableHead>Telefone</TableHead>
-                            <TableHead>Excluir</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    
-                    <TableBody>
-                        {contatos.length === 0 ? (
+                <div className="h-80 overflow-y-auto">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
-                                <TableCell colSpan={3} className="text-center text-gray-500">
-                                    {agendaId ? "Nenhum contato encontrado" : "Selecione uma agenda primeiro"}
-                                </TableCell>
+                                <TableHead>Nome</TableHead>
+                                <TableHead>Telefone</TableHead>
+                                <TableHead>Excluir</TableHead>
                             </TableRow>
-                        ) : (
-                            contatos.map((contato) => (
-                                <TableRow key={contato.id}>
-                                    <TableCell>{contato.nome}</TableCell>
-                                    <TableCell>{contato.telefone}</TableCell>
-                                    <TableCell>
-                                        <Button 
-                                            size={"icon"} 
-                                            variant={"ghost"}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                handleAbrirDialogExcluir(contato);
-                                            }}
-                                        >
-                                            <Trash2 className="text-red-500"/>
-                                        </Button>
+                        </TableHeader>
+                    
+                        <TableBody>
+                            {contatos.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center text-gray-500">
+                                        {agendaId ? "Nenhum contato encontrado" : "Selecione uma agenda primeiro"}
                                     </TableCell>
                                 </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
+                            ) : (
+                                contatos.map((contato) => (
+                                    <TableRow key={contato.id}>
+                                        <TableCell>{contato.nome}</TableCell>
+                                        <TableCell>{contato.telefone}</TableCell>
+                                        <TableCell>
+                                            <Button
+                                                size={"icon"}
+                                                variant={"ghost"}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleAbrirDialogExcluir(contato);
+                                                }}
+                                            >
+                                                <Trash2 className="text-red-500"/>
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>  
 
             {/* |=======| BOTÕES ABAIXO |=======| */}
@@ -187,6 +191,19 @@ export default function Home() {
                     <ArrowLeftRight />
                     {convertendo ? "Convertendo..." : "Converter Agenda"}
                 </Button>
+
+                <Button 
+                    className="bg-cyan-700 cursor-pointer hover:bg-cyan-500"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setIsDialogApagarPorNomeOpen(true);
+                    }}
+                >
+                    <Trash2 />
+                    Apagar por nome
+                </Button>
+
+
                 <Button 
                     className="bg-cyan-700 cursor-pointer hover:bg-cyan-500"
                     onClick={(e) => {
@@ -211,6 +228,11 @@ export default function Home() {
                 onOpenChange={setIsDialogApagarContatoOpen}
                 onConfirmar={handleExcluirContato}
                 contato={contatoParaExcluir}
+            />
+            <ApagarPorNome
+                isOpen={isDialogApagarPorNomeOpen}
+                onOpenChange={setIsDialogApagarPorNomeOpen}
+                agendaId={agendaId}
             />
         </div>
     );

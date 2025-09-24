@@ -49,8 +49,12 @@ export async function removerContato(agendaId: number, contatoId: number) {
 }
 
 // |=======| GET DA LISTA DE CONTATOS DE UMA AGENDA |=======|
-export async function getContatosDaAgenda(agendaId: number, telefone?: string) {
-  const params = telefone ? { telefone } : {};
+export async function getContatosDaAgenda(agendaId: number, telefone?: string, nome?: string) {
+  const params: Record<string, string> = {};
+
+  if (telefone) params.telefone = telefone;
+  if (nome) params.nome = nome;
+
   return api.get<Contato[]>(`/agendas/${agendaId}/contatos`, { params });
 }
 
@@ -68,4 +72,10 @@ export async function getAgendaComContatos(id: number) {
 export async function getAgendas(nome?: string){
   const params = nome ? { nome } : {};
   return api.get<Agenda[]>('/agendas', { params })
+}
+
+// |=======| DELETE POR PRÉ FIXO DO NOME |=======|
+export async function removeAllContatosFromAgenda(agendaId: number, nome?: string){
+  const params = nome ? { nome } : {};
+  return api.delete(`/agendas/${agendaId}/contatos`, { params })
 }

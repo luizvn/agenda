@@ -119,7 +119,7 @@ export default function SelecionarAgenda({ isOpen, onOpenChange, onAgendaSelecio
                             agendas.map((agenda) => (
                                 <div key={agenda.id} >
                                     <div className="flex flex-row justify-between items-center mb-1">
-                                        <p>{agenda.nome}</p>
+                                        <p className="w-24">{agenda.nome}</p>
                                         <Button 
                                             className="bg-cyan-700 hover:bg-cyan-500"
                                             onClick={() => onAgendaSelecionada(agenda)}
