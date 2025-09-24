@@ -88,8 +88,8 @@ public class AgendaController {
     }
 
     @GetMapping("/{agendaId}/contatos")
-    public ResponseEntity<Collection<ContatoResponseDTO>> getContatos(@PathVariable Long agendaId, @RequestParam(required = false) String telefone) {
-        Collection<ContatoResponseDTO> contatos = agendaService.getContatos(agendaId, telefone);
+    public ResponseEntity<Collection<ContatoResponseDTO>> getContatos(@PathVariable Long agendaId, @RequestParam(required = false) String telefone, @RequestParam(required = false) String nome) {
+        Collection<ContatoResponseDTO> contatos = agendaService.getContatos(agendaId, telefone, nome);
 
         return ResponseEntity.ok(contatos);
     }

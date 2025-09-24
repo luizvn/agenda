@@ -126,7 +126,7 @@ public class AgendaService {
     }
 
     @Transactional(readOnly = true)
-    public Collection<ContatoResponseDTO> getContatos(Long agendaId, String telefone) {
+    public Collection<ContatoResponseDTO> getContatos(Long agendaId, String telefone, String nome) {
         Agenda agenda = agendaRepository.findById(agendaId)
             .orElseThrow(() -> new RuntimeException("Agenda não encontrada."));
 
@@ -135,6 +135,10 @@ public class AgendaService {
         if(telefone != null && !telefone.isBlank()){
             contatosEncontrados = agenda.getContatos().stream()
                 .filter(contato -> contato.getTelefone().contains(telefone))
+                .collect(Collectors.toList());
+        }else if(nome != null && !nome.isBlank()){
+            contatosEncontrados = agenda.getContatos().stream()
+                .filter(contato -> contato.getNome().toLowerCase().startsWith(nome.toLowerCase()))
                 .collect(Collectors.toList());
         }else{
             contatosEncontrados = agenda.getContatos();

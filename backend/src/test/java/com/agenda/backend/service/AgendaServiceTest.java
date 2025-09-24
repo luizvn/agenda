@@ -398,7 +398,7 @@ public class AgendaServiceTest {
 
         when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
 
-        var contatos = agendaService.getContatos(1L, "71993193383");
+        var contatos = agendaService.getContatos(1L, "71993193383", null);
 
         assertEquals(1, contatos.size());
         assertEquals("Gabriel", contatos.iterator().next().nome());
@@ -417,7 +417,7 @@ public class AgendaServiceTest {
 
         when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
 
-        var contatos = agendaService.getContatos(1L, null);
+        var contatos = agendaService.getContatos(1L, null, null);
 
         assertEquals(1, contatos.size());
         assertEquals("Tatiana", contatos.iterator().next().nome());
