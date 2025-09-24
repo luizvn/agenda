@@ -478,4 +478,37 @@ public class AgendaServiceTest {
 
         assertTrue(ex.getMessage().contains("Agenda não encontrada"));
     }
+
+    @Test
+    void removerContatosPorPrefixo() {
+        Contato contato1 = new ContatoImpl();
+        contato1.setId(1L);
+        contato1.setNome("Gabriel");
+        contato1.setTelefone("71993193383");
+
+        Contato contato2 = new ContatoImpl();
+        contato2.setId(2L);
+        contato2.setNome("Luiza");
+        contato2.setTelefone("71993193384");
+
+        Contato contato3 = new ContatoImpl();
+        contato3.setId(3L);
+        contato3.setNome("Luiz");
+        contato3.setTelefone("71993193385");
+
+        AgendaList agenda = new AgendaList();
+        agenda.setId(10L);
+        agenda.addContato(contato1);
+        agenda.addContato(contato2);
+        agenda.addContato(contato3);
+
+        when(agendaRepository.findById(10L)).thenReturn(Optional.of(agenda));
+        when(agendaRepository.save(any(Agenda.class))).thenReturn(agenda);
+
+        agendaService.removeContatosByNome(10L, "Lu");
+
+        assertEquals(1, agenda.getContatos().size());
+        assertTrue(agenda.getContatos().stream().anyMatch(c -> c.getNome().equals("Gabriel")));
+        verify(agendaRepository, times(1)).save(agenda);
+    }
 }
