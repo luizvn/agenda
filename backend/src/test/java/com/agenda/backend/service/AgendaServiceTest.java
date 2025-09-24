@@ -405,6 +405,31 @@ public class AgendaServiceTest {
     }
 
     @Test
+    void buscarContatoPorNome() {
+        Contato contato1 = new ContatoImpl();
+        contato1.setId(1L);
+        contato1.setNome("Gabriel");
+        contato1.setTelefone("71993193383");
+
+        Contato contato2 = new ContatoImpl();
+        contato2.setId(2L);
+        contato2.setNome("Iuri");
+        contato2.setTelefone("71993193384");
+
+        AgendaList agenda = new AgendaList();
+        agenda.setId(1L);
+        agenda.addContato(contato1);
+        agenda.addContato(contato2);
+
+        when(agendaRepository.findById(1L)).thenReturn(Optional.of(agenda));
+
+        var contatos = agendaService.getContatos(1L, null, "Iuri");
+
+        assertEquals(1, contatos.size());
+        assertEquals("Iuri", contatos.iterator().next().nome());
+    }
+
+    @Test
     void buscarTodosContatosSemFiltro() {
         Contato contato = new ContatoImpl();
         contato.setId(1L);
